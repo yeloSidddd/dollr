@@ -7,6 +7,8 @@ import "./index.css";
 
 import { BrowserRouter, Route, Routes } from "react-router";
 import Settings from "./Pages/Setting";
+import Transactions from "./Pages/Transactions";
+import Reports from "./Pages/Reports";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           
           <Route path="main" element={<Layout />}>
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="transactions" element={<Transactions />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
