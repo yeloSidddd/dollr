@@ -33,20 +33,20 @@ export default function Sidebar() {
       {/* Nav Items */}
       <nav className="flex-1">
         <ul className="space-y-1">
-          {navItems.map(({ name, icon: Icon }) => (
-            <li key={name}>
+          {navItems.map(({ name: Name, icon: Icon }) => (
+            <li key={Name}>
               <div
                 className={`group flex items-center transition-all duration-200 cursor-pointer hover:bg-gray-800 mx-2 rounded-lg ${
                   collapsed ? "justify-center px-3 py-3" : "gap-4 px-4 py-3"
                 }`}
-                onClick={() => handleClick(name)}
+                onClick={() => handleClick(Name)}
               >
                 <div className="flex-shrink-0 transition-colors duration-200 group-hover:text-gray-300">
                   <Icon />
                 </div>
                 {!collapsed && (
                   <span className="whitespace-nowrap transition-all duration-300 group-hover:text-gray-300">
-                    {name}
+                    {Name}
                   </span>
                 )}
               </div>
@@ -85,7 +85,7 @@ export default function Sidebar() {
       </div>
 
       {/* Logout */}
-      <div className="p-4">
+      <div className="p-4" onClick={() => handleClick()}>
         <div
           className={`flex items-center cursor-pointer rounded-lg transition-all duration-300 hover:bg-red-600 hover:scale-105 hover:shadow-lg group ${
             collapsed ? "justify-center px-3 py-3" : "gap-3 px-3 py-3"
@@ -105,9 +105,7 @@ export default function Sidebar() {
   );
 
   function handleClick(name) {
-  
-    switch (name)
-    {
+    switch (name) {
       case "Dashboard":
         navigate("/main/dashboard");
         break;
@@ -120,16 +118,15 @@ export default function Sidebar() {
         navigate("/main/reports");
         break;
 
-      
       case "Settings":
         navigate("/main/settings");
         break;
 
       default:
+        navigate("/");
         break;
     }
-
-}
+  }
 }
 
 function MenuIcon() {
