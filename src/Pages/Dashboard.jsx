@@ -6,7 +6,7 @@ export default function Dashboard() {
   return (
     <>
       {/* Net Worth and Trend */}
-      <div className="flex flex-row md:flex-row justify-between items-start md:items-start p-6 sm:p-10 gap-6">
+      <div className="flex flex-row justify-between items-start p-6 sm:p-10 gap-6">
         {/* Net Worth */}
         <div>
           <p className="text-sm text-gray-400">Net Worth</p>
