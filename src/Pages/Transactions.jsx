@@ -5,7 +5,7 @@ export default function Transactions() {
   return (
     <>
       <div className="flex flex-row justify-between items-start p-6 sm:p-10 gap-6">
-        <h1>Transaction</h1>
+        <h2 className="text-xl font-semibold">Transactions</h2>
       </div>
 
       {/* Search and Buttons */}
