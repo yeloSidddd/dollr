@@ -5,6 +5,10 @@ import wifi from "../Resources/wifi.svg";
 export default function Dashboard() {
   return (
     <>
+
+    <div className="flex flex-row justify-between items-start px-6 pt-6 sm:px-10 sm:pt-10 gap-6">
+        <h2 className="text-xl font-semibold">Dashboard</h2>
+      </div>
       {/* Net Worth and Trend */}
       <div className="flex flex-row justify-between items-start p-6 sm:p-10 gap-6">
         {/* Net Worth */}

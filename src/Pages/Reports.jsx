@@ -122,7 +122,7 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="flex flex-row justify-between items-start p-6 sm:p-6 md:p-10 gap-4">
+        <div className="flex flex-row justify-between items-start p-6 sm:p-6 md:px-10 md:pt-10 md:pb-6 gap-4">
           <h2 className="text-xl font-semibold">Summary</h2>
         </div>
 

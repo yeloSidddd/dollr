@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import Settings from "./Pages/Setting";
 import Transactions from "./Pages/Transactions";
 import Reports from "./Pages/Reports";
+import Notification from "./Pages/Notification";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="transactions" element={<Transactions />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="notification" element={<Notification />} />
           </Route>
         </Routes>
       </BrowserRouter>

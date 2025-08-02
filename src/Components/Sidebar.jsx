@@ -12,6 +12,7 @@ export default function Sidebar() {
     { name: "Transactions", icon: TransactionsIcon, path: "/main/transactions" },
     { name: "Reports", icon: ReportsIcon, path: "/main/reports" },
     { name: "Settings", icon: SettingsIcon, path: "/main/settings" },
+    { name: "Notifications", icon: NotificationIcon, path: "/main/notification" },
   ];
 
   function handleClick(name, path) {
@@ -25,7 +26,8 @@ export default function Sidebar() {
   }
 
   const isActivePage = (path) => {
-    return location.pathname === path;
+    // allow highlighting for nested routes as well
+    return location.pathname === path || location.pathname.startsWith(path + "/");
   };
 
   return (
@@ -49,6 +51,7 @@ export default function Sidebar() {
           <button
             className="text-white hover:text-gray-300 transition-colors p-1"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
@@ -58,8 +61,8 @@ export default function Sidebar() {
       {/* Mobile Dropdown */}
       <div
         className={`w-full bg-black md:hidden transition-all duration-500 ease-out overflow-hidden border-t border-gray-800 ${
-          mobileMenuOpen 
-            ? "max-h-[500px] opacity-100" 
+          mobileMenuOpen
+            ? "max-h-[500px] opacity-100"
             : "max-h-0 opacity-0"
         }`}
       >
@@ -67,9 +70,9 @@ export default function Sidebar() {
         <div className="border-b border-gray-800 p-4">
           <div className="flex items-center gap-3">
             <div className="relative flex-shrink-0">
-              <img 
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
-                alt="Profile" 
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+                alt="Profile"
                 className="w-10 h-10 rounded-full ring-2 ring-gray-600"
               />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
@@ -122,12 +125,15 @@ export default function Sidebar() {
             <span className="text-lg font-bold text-white whitespace-nowrap">Dollr</span>
           )}
         </div>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="text-gray-400 hover:text-white hover:bg-gray-800 p-2 rounded-lg transition-all duration-200 flex-shrink-0"
-        >
-          {collapsed ? <MenuIcon /> : <CloseIcon />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-gray-400 hover:text-white hover:bg-gray-800 p-2 rounded-lg transition-all duration-200 flex-shrink-0"
+            aria-label="Toggle collapse"
+          >
+            {collapsed ? <MenuIcon /> : <CloseIcon />}
+          </button>
+        </div>
       </div>
 
       {/* Desktop Profile Section */}
@@ -136,14 +142,14 @@ export default function Sidebar() {
           collapsed ? "justify-center" : "gap-3"
         }`}>
           <div className="relative flex-shrink-0">
-            <img 
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
-              alt="Profile" 
+            <img
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+              alt="Profile"
               className="w-8 h-8 rounded-full ring-2 ring-gray-600 hover:ring-gray-400 transition-all cursor-pointer"
             />
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
           </div>
-          
+
           <div className={`overflow-hidden transition-all duration-300 ${
             collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
           }`}>
@@ -164,8 +170,8 @@ export default function Sidebar() {
                 className={`group flex items-center transition-all duration-300 cursor-pointer rounded-xl relative ${
                   collapsed ? "justify-center px-3 py-3" : "gap-3 px-4 py-3"
                 } ${
-                  isActivePage(path) 
-                    ? "bg-gray-800 text-white" 
+                  isActivePage(path)
+                    ? "bg-gray-800 text-white"
                     : "hover:bg-gray-800 text-gray-300 hover:text-white"
                 }`}
                 onClick={() => handleClick(name, path)}
@@ -174,13 +180,13 @@ export default function Sidebar() {
                 {isActivePage(path) && (
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full"></div>
                 )}
-                
+
                 <div className={`flex-shrink-0 transition-colors duration-200 ${
                   isActivePage(path) ? "text-white" : "text-gray-300 group-hover:text-white"
                 }`}>
                   <Icon />
                 </div>
-                
+
                 <div className={`overflow-hidden transition-all duration-300 ${
                   collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
                 }`}>
@@ -325,6 +331,24 @@ function SettingsIcon() {
   return (
     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
       <path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5zm7.43-2.53c.04-.32.07-.64.07-.97s-.03-.66-.07-.97l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.4-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0014 2h-4c-.25 0-.46.18-.49.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.32-.07.65-.07.97s.02.66.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z" />
+    </svg>
+  );
+}
+
+function NotificationIcon() {
+  return (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11c0-2.21-1.343-4.084-3.2-4.8A1.993 1.993 0 0013 5a2 2 0 00-4 0c0 .368.103.712.281 1.007C7.343 6.916 6 8.79 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m1 0v1a3 3 0 006 0v-1m-6 0h6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
