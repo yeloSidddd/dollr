@@ -1,11 +1,11 @@
-import { NavLink } from 'react-router-dom'
-import lImage from '../Resources/Login.png'
+import { NavLink } from "react-router-dom";
+import lImage from "../Resources/Login.png";
 
 export default function Signup() {
   return (
     <div className="flex flex-wrap gap-5 p-5 min-h-screen box-border">
       {/* Left Column */}
-      <div className="flex-1 min-w-[280px] bg-white rounded-lg p-5 flex justify-center items-center">
+      <div className="hidden md:flex flex-1 min-w-[280px] bg-white rounded-lg p-5 justify-center items-center">
         <img
           src={lImage}
           alt="Login Visual"
@@ -61,7 +61,10 @@ export default function Signup() {
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirm-password" className="block font-semibold mb-2">
+            <label
+              htmlFor="confirm-password"
+              className="block font-semibold mb-2"
+            >
               Confirm Password
             </label>
             <input
@@ -85,12 +88,12 @@ export default function Signup() {
 
         {/* Login Link */}
         <p className="mt-10 text-center font-semibold">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <NavLink to="/" className="text-[#3AC249]">
             Login
           </NavLink>
         </p>
       </div>
     </div>
-  )
+  );
 }

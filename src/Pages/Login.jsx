@@ -6,7 +6,7 @@ export default function Login() {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen p-5 gap-5">
       {/* Left Column */}
-      <div className="flex-1 min-w-[280px] bg-white rounded-lg p-5 flex justify-center items-center">
+      <div className="hidden md:flex flex-1 min-w-[280px] bg-white rounded-lg p-5 justify-center items-center">
         <img
           src={lImage}
           alt="Login Visual"
