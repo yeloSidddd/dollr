@@ -1,8 +1,35 @@
-import { NavLink } from "react-router-dom"; // Make sure this is 'react-router-dom'
+import { NavLink, useNavigate } from "react-router-dom"; // Make sure this is 'react-router-dom'
 import lImage from "../Resources/Login.png";
 import GreenCheckbox from "../Components/Checkbox";
+import { useState } from "react";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const nav=useNavigate();
+
+   const handleLogin = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const text = await res.text();
+      console.log("Response Text:", text);
+      if(text==="success")
+      {
+        nav('/main/dashboard');
+      }
+    } catch (err) {
+      console.log("Error");
+    }
+  };
+
   return (
     <div className="flex flex-col lg:flex-row min-h-screen p-5 gap-5">
       {/* Left Column */}
@@ -33,6 +60,10 @@ export default function Login() {
               id="email"
               name="email"
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-gray-500"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
             />
           </div>
 
@@ -46,19 +77,23 @@ export default function Login() {
               id="password"
               name="password"
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-gray-500"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
             />
           </div>
 
-            <GreenCheckbox />
+          <GreenCheckbox />
           {/* Signin Button */}
-          <NavLink to="/main/dashboard">
-            <button
-              type="button"
-              className="w-full bg-[#3AC249] text-white font-bold py-3 rounded-full hover:bg-[#33b040] transition-colors"
-            >
-              Signin
-            </button>
-          </NavLink>
+
+          <button
+            type="button"
+            className="w-full bg-[#3AC249] text-white font-bold py-3 rounded-full hover:bg-[#33b040] transition-colors"
+            onClick={handleLogin}
+          >
+            Signin
+          </button>
         </form>
 
         {/* Signup Link */}
