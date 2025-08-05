@@ -10,8 +10,19 @@ import Settings from "./Pages/Setting";
 import Transactions from "./Pages/Transactions";
 import Reports from "./Pages/Reports";
 import Notification from "./Pages/Notification";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    fetch('http://localhost:8080/api/connection-status')
+      .then(res => res.text())
+      .then(message => {
+        console.log(message);  // Logs "Connected" in browser console
+      })
+      .catch(err => console.error('Error fetching connection status:', err));
+  }, []);
+
+  
   return (
     <>
       <BrowserRouter>

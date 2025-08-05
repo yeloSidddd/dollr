@@ -1,5 +1,5 @@
 import wifi from "../Resources/wifi.svg";
-import cash from "../Resources/sanocash.svg"
+import cash from "../Resources/sanocash.svg";
 
 export default function Transactions() {
   return (
@@ -74,19 +74,18 @@ export default function Transactions() {
         <button className="flex items-center bg-green-500 hover:bg-green-600 px-4 py-3 rounded-full flex-1 min-w-[200px]">
           <div className="w-5 h-5 text-white flex-shrink-0">
             <svg
-  className="w-5 h-5"
-  fill="none"
-  stroke="currentColor"
-  strokeWidth="2"
-  viewBox="0 0 24 24"
->
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
-  />
-</svg>
-
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+              />
+            </svg>
           </div>
           <span className="flex-grow text-sm text-white text-center leading-none">
             Export
@@ -189,7 +188,6 @@ export default function Transactions() {
                   Rs. 28,000
                 </td>
               </tr>
-              
             </tbody>
           </table>
         </div>
