@@ -6,6 +6,7 @@ export default function Sidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const navItems = [
     { name: "Dashboard", icon: DashboardIcon, path: "/main/dashboard" },
@@ -30,6 +31,41 @@ export default function Sidebar() {
 
   return (
     <>
+      {/* Upgrade Modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white text-black p-6 rounded-2xl max-w-md w-full relative shadow-xl">
+            <button
+              className="absolute top-3 right-3 text-gray-600 hover:text-black"
+              onClick={() => setShowUpgradeModal(false)}
+              aria-label="Close modal"
+            >
+              <CloseIcon />
+            </button>
+            <h2 className="text-xl font-bold mb-2">Upgrade to Pro</h2>
+            <p className="text-sm text-gray-700 mb-4">
+              Unlock premium features like:
+            </p>
+            <ul className="list-disc pl-5 text-sm text-gray-800 mb-4 space-y-1">
+              <li>Advanced analytics & reports</li>
+              <li>Real-time budget alerts</li>
+              <li>Priority support</li>
+              <li>Unlimited transaction history</li>
+            </ul>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded w-full"
+              onClick={() => {
+                // Replace with actual upgrade logic
+                alert("Redirecting to upgrade...");
+                setShowUpgradeModal(false);
+              }}
+            >
+              Upgrade Now
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
         <div
@@ -59,7 +95,9 @@ export default function Sidebar() {
               <p className="text-sm font-medium text-white truncate">Samantha</p>
               <p className="text-xs text-gray-400 truncate">samantha@email.com</p>
             </div>
-            <button className="text-xs font-semibold bg-white text-black rounded-full px-3 py-1 hover:bg-gray-200 transition-all">
+            <button
+              className="text-xs font-semibold bg-white text-black rounded-full px-3 py-1 hover:bg-gray-200 transition-all"
+            >
               Pro
             </button>
           </div>
@@ -106,7 +144,7 @@ export default function Sidebar() {
         <div className="w-full flex items-center justify-between px-4 md:hidden h-14 flex-shrink-0">
           <span className="text-lg font-bold text-white">Dollr</span>
           <div className="flex items-center gap-2">
-            <button className="text-xs font-semibold bg-white text-black rounded-full px-2 py-[2px] hover:bg-gray-200 transition-all">
+            <button className="text-xs font-semibold bg-white text-black rounded-full px-2 py-[2px] hover:bg-gray-200 transition-all" onClick={() => setShowUpgradeModal(true)}>
               ↑
             </button>
             <button
@@ -186,9 +224,11 @@ export default function Sidebar() {
         {/* Desktop Upgrade and Logout */}
         <div className="hidden md:block p-3">
           <div className={`mb-3 transition-all duration-300 ${collapsed ? "px-1" : "px-2"}`}>
-            <div className={`rounded-xl text-white hover:shadow-lg transition-all cursor-pointer ${
-              collapsed ? "p-3 flex items-center justify-center" : "p-4 flex flex-col items-center justify-center"
-            }`}>
+            <div
+              className={`rounded-xl text-white hover:shadow-lg transition-all cursor-pointer ${
+                collapsed ? "p-3 flex items-center justify-center" : "p-4 flex flex-col items-center justify-center"
+              }`}
+            >
               <div className={`overflow-hidden transition-all duration-300 ${
                 collapsed ? "h-0 opacity-0" : "h-auto opacity-100"
               }`}>
@@ -199,9 +239,12 @@ export default function Sidebar() {
                   </>
                 )}
               </div>
-              <button className={`font-semibold bg-white text-black rounded-full hover:bg-gray-100 hover:shadow transition-all duration-300 ${
-                collapsed ? "px-2 py-1 text-xs" : "mt-3 px-4 py-2 text-sm"
-              }`}>
+              <button
+                className={`font-semibold bg-white text-black rounded-full hover:bg-gray-100 hover:shadow transition-all duration-300 ${
+                  collapsed ? "px-2 py-1 text-xs" : "mt-3 px-4 py-2 text-sm"
+                }`}
+                onClick={() => setShowUpgradeModal(true)}
+              >
                 {collapsed ? "↑" : "Upgrade"}
               </button>
             </div>
