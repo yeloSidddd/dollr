@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom"; // Make sure this is 'r
 import lImage from "../Resources/Login.png";
 import GreenCheckbox from "../Components/Checkbox";
 import { useState } from "react";
+import axios from "axios";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,25 +11,20 @@ export default function Login() {
   const nav=useNavigate();
 
    const handleLogin = async () => {
-    try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const res = await axios.post("http://localhost:8080/api/auth/login", {
+      email,
+      password,
+    });
 
-      const text = await res.text();
-      console.log("Response Text:", text);
-      if(text==="success")
-      {
-        nav('/main/dashboard');
-      }
-    } catch (err) {
-      console.log("Error");
+    console.log("Response Text:", res.data);
+    if (res.data === "success") {
+      nav("/main/dashboard");
     }
-  };
+  } catch (err) {
+    console.log("Error:", err);
+  }
+};
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen p-5 gap-5">
