@@ -10,7 +10,7 @@ export default function Login() {
 
   const nav=useNavigate();
 
-   const handleLogin = async () => {
+  const handleLogin = async () => {
   try {
     const res = await axios.post("http://localhost:8080/api/auth/login", {
       email,
