@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Card from "./Card";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -42,39 +43,14 @@ export default function Sidebar() {
   return (
     <>
       {/* Upgrade Modal */}
-      {showUpgradeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white text-black p-6 rounded-2xl max-w-md w-full relative shadow-xl">
-            <button
-              className="absolute top-3 right-3 text-gray-600 hover:text-black"
-              onClick={() => setShowUpgradeModal(false)}
-              aria-label="Close modal"
-            >
-              <CloseIcon />
-            </button>
-            <h2 className="text-xl font-bold mb-2">Upgrade to Pro</h2>
-            <p className="text-sm text-gray-700 mb-4">
-              Unlock premium features like:
-            </p>
-            <ul className="list-disc pl-5 text-sm text-gray-800 mb-4 space-y-1">
-              <li>Advanced analytics & reports</li>
-              <li>Real-time budget alerts</li>
-              <li>Priority support</li>
-              <li>Unlimited transaction history</li>
-            </ul>
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded w-full"
-              onClick={() => {
-                // Replace with actual upgrade logic
-                alert("Redirecting to upgrade...");
-                setShowUpgradeModal(false);
-              }}
-            >
-              Upgrade Now
-            </button>
-          </div>
-        </div>
-      )}
+      <Card
+        show={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onUpgrade={() => {
+          alert("Redirecting to upgrade...");
+          setShowUpgradeModal(false);
+        }}
+      />
 
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
@@ -91,7 +67,13 @@ export default function Sidebar() {
         }`}
       >
         {/* Mobile Profile */}
-        <div className="border-b border-gray-800 p-4">
+        <button className="border-b border-gray-800 p-4 text-left" onClick={()=>
+          {
+            setMobileMenuOpen(false);
+            setShowUpgradeModal(true);
+            console.log("Click Mobile");
+          }
+        }>
           <div className="flex items-center gap-3">
             <div className="relative flex-shrink-0">
               <img
@@ -109,11 +91,11 @@ export default function Sidebar() {
                 acoustic@email.com
               </p>
             </div>
-            <button className="text-xs font-semibold bg-white text-black rounded-full px-3 py-1 hover:bg-gray-200 transition-all">
+            <div className="text-xs font-semibold bg-white text-black rounded-full px-3 py-1 hover:bg-gray-200 transition-all">
               Pro
-            </button>
+            </div>
           </div>
-        </div>
+        </button>
 
         {/* Mobile Nav */}
         <ul className="flex flex-col">
@@ -200,6 +182,7 @@ export default function Sidebar() {
         <button
           className="hidden md:block p-4 border-b border-gray-800 text-left hover:bg-gray-700"
           onClick={() => {
+            setShowUpgradeModal(true);
             console.log("Click");
           }}
         >

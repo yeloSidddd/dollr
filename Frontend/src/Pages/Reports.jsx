@@ -90,12 +90,12 @@ export default function Reports() {
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Left Panel */}
       <div className="w-full md:flex-[3] flex flex-col h-full">
-        <div className="flex flex-row justify-between items-start p-4 sm:p-6 md:p-10 gap-4">
+        <div className="flex flex-row justify-between items-start p-4 sm:p-10 md:p-10 gap-4">
           <h2 className="text-xl font-semibold">Report</h2>
         </div>
 
         {/* Chart */}
-        <div className="p-6 sm:p-6 md:p-10 w-full" ref={chartRef} />
+        <div className="p-6 sm:p-10 md:p-10 w-full" ref={chartRef} />
 
         {/* Button group */}
         <div className="flex justify-center items-center px-6 py-6 sm:px-6 sm:py-0">
@@ -122,18 +122,18 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="flex flex-row justify-between items-start p-6 sm:p-6 md:px-10 md:pt-10 md:pb-6 gap-4">
+        <div className="flex flex-row justify-between items-start p-6 sm:p-10 md:px-10 md:pt-10 md:pb-6 gap-4">
           <h2 className="text-xl font-semibold">Summary</h2>
         </div>
 
-        <div className="px-6 sm:px-6 md:px-10">
+        <div className="px-6 sm:px-10 md:px-10">
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
         </div>
       </div>
 
       {/* Right Panel */}
       <main className="w-full md:flex-[1] bg-gray-200 overflow-auto max-h-screen">
-        <div className="flex flex-row justify-between items-start p-6 sm:p-6 md:p-10 gap-4">
+        <div className="flex flex-row justify-between items-start p-6 sm:p-10 md:p-10 gap-4">
           <h1 className="text-lg font-medium">Where did your money go?</h1>
         </div>
         {/* Add right panel content here */}
