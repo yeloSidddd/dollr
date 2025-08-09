@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Card from "./Card";
+import ProfileCardModal from "./ProfileCard";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const navItems = [
     { name: "Dashboard", icon: DashboardIcon, path: "/main/dashboard" },
@@ -52,6 +54,15 @@ export default function Sidebar() {
         }}
       />
 
+      {/* Profile Modal */}
+      <ProfileCardModal
+        show={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        onUpgrade={() => {
+          setShowUpgradeModal(false);
+        }}
+      />
+
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
         <div
@@ -70,7 +81,7 @@ export default function Sidebar() {
         <button className="border-b border-gray-800 p-4 text-left" onClick={()=>
           {
             setMobileMenuOpen(false);
-            setShowUpgradeModal(true);
+            setShowProfileModal(true);
             console.log("Click Mobile");
           }
         }>
@@ -182,7 +193,7 @@ export default function Sidebar() {
         <button
           className="hidden md:block p-4 border-b border-gray-800 text-left hover:bg-gray-700"
           onClick={() => {
-            setShowUpgradeModal(true);
+            setShowProfileModal(true);
             console.log("Click");
           }}
         >
