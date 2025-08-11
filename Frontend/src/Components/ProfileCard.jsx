@@ -59,7 +59,7 @@ export default function ProfileCardModal({
 
 // Close Icon
 function CloseIcon() {
-  console.log("hello");
+  console.log("hello world");
   return (
     <svg
       className="w-5 h-5"
