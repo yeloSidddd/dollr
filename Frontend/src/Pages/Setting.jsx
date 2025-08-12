@@ -4,6 +4,7 @@ import AccountSettings from "./Account";
 import BillingSettings from "./Billing";
 import PlansSettings from "./Plans";
 import NotificationSettings from "./NotificationSetting";
+import Login from "./Login";
 
 export default function Settings() {
   const [activeButton, setActiveButton] = useState("Profile");
@@ -31,7 +32,7 @@ export default function Settings() {
       case "Notification":
         return <NotificationSettings/>;
       default:
-        return <div>Hello World</div>;
+        return <Login/>;
     }
   }
 
