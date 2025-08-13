@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.model.user;
+import com.example.demo.model.User;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -14,7 +14,7 @@ import com.example.demo.model.user;
 public class AuthController {
     
     @PostMapping("/login")
-    public String login(@RequestBody user user)
+    public String login(@RequestBody User user)
     {
         String email = user.getEmail();
         String password = user.getPassword();

@@ -14,13 +14,18 @@ import { useEffect } from "react";
 
 function App() {
   useEffect(() => {
-    fetch('http://localhost:8080/api/connection-status')
-      .then(res => res.text())
-      .then(message => {
-        console.log(message);  // Logs "Connected" in browser console
-      })
-      .catch(err => console.error('Error fetching connection status:', err));
-  }, []);
+  const checkConnection = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/connection-status');
+      const message = await res.text();
+      console.log(message);
+    } catch (err) {
+      console.error('Error fetching connection status:', err);
+    }
+  };
+  checkConnection();
+}, []);
+
 
   
   return (
