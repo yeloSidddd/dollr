@@ -12,10 +12,9 @@ import com.example.demo.model.User;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/auth")
 public class AuthController {
-    
+
     @PostMapping("/login")
-    public String login(@RequestBody User user)
-    {
+    public String login(@RequestBody User user) {
         String email = user.getEmail();
         String password = user.getPassword();
 

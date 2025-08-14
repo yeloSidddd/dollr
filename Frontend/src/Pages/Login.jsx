@@ -8,23 +8,24 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const nav=useNavigate();
+  const nav = useNavigate();
 
   const handleLogin = async () => {
-  try {
-    const res = await axios.post("http://localhost:8080/api/auth/login", {
-      email,
-      password,
-    });
+    nav("/main/dashboard");
+    // try {
+    //   const res = await axios.post("http://localhost:8080/api/auth/login", {
+    //     email,
+    //     password,
+    //   });
 
-    console.log("Response Text:", res.data);
-    if (res.data === "success") {
-      nav("/main/dashboard");
-    }
-  } catch (err) {
-    console.log("Error:", err);
-  }
-};
+    //   console.log("Response Text:", res.data);
+    //   if (res.data === "success") {
+    //     nav("/main/dashboard");
+    //   }
+    // } catch (err) {
+    //   console.log("Error:", err);
+    // }
+  };
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen p-5 gap-5">
