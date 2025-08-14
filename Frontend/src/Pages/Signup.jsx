@@ -1,7 +1,36 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import lImage from "../Resources/Login.png";
+import { useState } from "react";
+import axios from "axios";
 
 export default function Signup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const nav= useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/api/users/register",
+        {email,password}
+      );
+
+      console.log("Saved user:", res.data);
+      alert(`User ${res.data.username} registered!`);
+
+      // Reset form
+      setEmail("");
+      setPassword("");
+
+      nav("/");
+    } catch (error) {
+      console.error("Error registering user:", error);
+      alert("Registration failed!");
+    }
+  };
+
   return (
     <div className="flex flex-wrap gap-5 p-5 min-h-screen box-border">
       {/* Left Column */}
@@ -19,7 +48,10 @@ export default function Signup() {
           Create an Account
         </h2>
 
-        <form className="flex flex-col gap-5 w-full max-w-md mx-auto">
+        <form
+          className="flex flex-col gap-5 w-full max-w-md mx-auto"
+          onSubmit={handleSubmit}
+        >
           {/* Full Name */}
           <div>
             <label htmlFor="fullname" className="block font-semibold mb-2">
@@ -42,7 +74,11 @@ export default function Signup() {
               type="email"
               id="email"
               name="email"
+              value={email}
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-gray-500"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
             />
           </div>
 
@@ -55,7 +91,11 @@ export default function Signup() {
               type="password"
               id="password"
               name="password"
+              value={password}
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-gray-500"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
             />
           </div>
 
@@ -76,14 +116,14 @@ export default function Signup() {
           </div>
 
           {/* Continue Button */}
-          <NavLink to="/">
+         
             <button
               type="submit"
               className="w-full bg-[#3AC249] text-white font-bold py-3 rounded-full hover:bg-[#33b040] transition-colors"
             >
               Continue
             </button>
-          </NavLink>
+          
         </form>
 
         {/* Login Link */}

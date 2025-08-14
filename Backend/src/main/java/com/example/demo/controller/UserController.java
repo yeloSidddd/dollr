@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -16,7 +17,7 @@ public class UserController {
         this.repo = repo;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public User addUser(@RequestBody User user) {
         return repo.save(user);
     }
