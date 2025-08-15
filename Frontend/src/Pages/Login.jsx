@@ -11,20 +11,19 @@ export default function Login() {
   const nav = useNavigate();
 
   const handleLogin = async () => {
-    nav("/main/dashboard");
-    // try {
-    //   const res = await axios.post("http://localhost:8080/api/auth/login", {
-    //     email,
-    //     password,
-    //   });
+    try {
+      const res = await axios.post("http://localhost:8080/api/auth/login", {
+        email: email,
+        password: password,
+      });
 
-    //   console.log("Response Text:", res.data);
-    //   if (res.data === "success") {
-    //     nav("/main/dashboard");
-    //   }
-    // } catch (err) {
-    //   console.log("Error:", err);
-    // }
+      console.log("Response Text:", res.data);
+      if (res.data === "success") {
+        nav("/main/dashboard");
+      }
+    } catch (err) {
+      console.log("Error:", err);
+    }
   };
 
   return (
