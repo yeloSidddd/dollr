@@ -6,30 +6,50 @@ import axios from "axios";
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullname, setFullname] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
 
-  const nav= useNavigate();
+  const nav = useNavigate();
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/users/register",
-        {email,password}
-      );
+      const res = await axios.post("http://localhost:8080/api/users/register", {
+        email: email,
+        password: password,
+        name: fullname,
+        phone: phone,         // optional
+        country: country,     // optional
+        state: state,         // optional
+        type: "free"          // default type
+      });
 
       console.log("Saved user:", res.data);
-      alert(`User ${res.data.username} registered!`);
+      alert(`User ${res.data.name} registered successfully!`);
 
       // Reset form
       setEmail("");
       setPassword("");
+      setFullname("");
+      setPhone("");
+      setCountry("");
+      setState("");
 
-      nav("/");
+      nav("/"); // redirect after successful registration
+
     } catch (error) {
+      if (error.response) {
+        alert(`Registration failed: ${error.response.data}`);
+      } else {
+        alert("Registration failed! Please try again.");
+      }
       console.error("Error registering user:", error);
-      alert("Registration failed!");
     }
-  };
+};
+
 
   return (
     <div className="flex flex-wrap gap-5 p-5 min-h-screen box-border">
@@ -61,7 +81,11 @@ export default function Signup() {
               type="text"
               id="fullname"
               name="fullname"
+              value={fullname}
               className="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-gray-500"
+              onChange={(e) => {
+                setFullname(e.target.value);
+              }}
             />
           </div>
 
@@ -116,14 +140,13 @@ export default function Signup() {
           </div>
 
           {/* Continue Button */}
-         
-            <button
-              type="submit"
-              className="w-full bg-[#3AC249] text-white font-bold py-3 rounded-full hover:bg-[#33b040] transition-colors"
-            >
-              Continue
-            </button>
-          
+
+          <button
+            type="submit"
+            className="w-full bg-[#3AC249] text-white font-bold py-3 rounded-full hover:bg-[#33b040] transition-colors"
+          >
+            Continue
+          </button>
         </form>
 
         {/* Login Link */}

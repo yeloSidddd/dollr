@@ -18,8 +18,13 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User addUser(@RequestBody User user) {
-        return repo.save(user);
+    public User registerUser(@RequestBody User user) {
+        // Save user to DB
+        User savedUser = repo.save(user);
+
+        // Hide password before returning
+        savedUser.setPassword(null);
+        return savedUser;
     }
 
     @GetMapping
