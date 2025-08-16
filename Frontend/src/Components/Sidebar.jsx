@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Card from "./Card";
 import ProfileCardModal from "./ProfileCard";
+import axios from "axios";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -11,8 +12,14 @@ export default function Sidebar() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
+  const [name, setName] = useState("");
+
   const navItems = [
-    { name: "Dashboard", icon: DashboardIcon, path: "/main/dashboard" },
+    {
+      name: "Dashboard",
+      icon: DashboardIcon,
+      path: "/main/dashboard",
+    },
     {
       name: "Transactions",
       icon: TransactionsIcon,
@@ -27,11 +34,43 @@ export default function Sidebar() {
     },
   ];
 
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/api/users/me", {
+          withCredentials: true,
+        });
+        setName(res.data);
+        console.log(res.data);
+      } catch (err) {
+        console.log("Not logged in or error:", err);
+      }
+    };
+
+    fetchName();
+  }, []);
+
+  const logOut = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      navigate("/")
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   function handleClick(name, path) {
     if (path) {
       navigate(path);
     } else {
-      navigate("/");
+      logOut();
+      console.log("click");
     }
     setMobileMenuOpen(false);
   }
@@ -78,13 +117,14 @@ export default function Sidebar() {
         }`}
       >
         {/* Mobile Profile */}
-        <button className="border-b border-gray-800 p-4 text-left" onClick={()=>
-          {
+        <button
+          className="border-b border-gray-800 p-4 text-left"
+          onClick={() => {
             setMobileMenuOpen(false);
             setShowProfileModal(true);
             console.log("Click Mobile");
-          }
-        }>
+          }}
+        >
           <div className="flex items-center gap-3">
             <div className="relative flex-shrink-0">
               <img
@@ -95,9 +135,7 @@ export default function Sidebar() {
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-black"></div>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-white truncate">
-                Acoustic
-              </p>
+              <p className="text-sm font-medium text-white truncate">{name}</p>
               <p className="text-xs text-gray-400 truncate">
                 acoustic@email.com
               </p>
@@ -215,9 +253,7 @@ export default function Sidebar() {
                 collapsed ? "w-0 opacity-0" : "w-auto opacity-100"
               }`}
             >
-              <p className="text-sm font-medium text-white truncate">
-                Acoustic
-              </p>
+              <p className="text-sm font-medium text-white truncate">{name}</p>
               <p className="text-xs text-gray-400 truncate">
                 acoustic@email.com
               </p>

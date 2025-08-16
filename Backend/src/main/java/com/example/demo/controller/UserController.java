@@ -2,12 +2,15 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+
+import jakarta.servlet.http.HttpSession;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -27,8 +30,16 @@ public class UserController {
         return savedUser;
     }
 
-    @GetMapping
-    public List<User> getUsers() {
-        return repo.findAll();
+    @GetMapping("/me")
+    public ResponseEntity<String> getSessionName(HttpSession session) {
+        String name = (String) session.getAttribute("name");
+
+        if (name != null) {
+            System.out.println(name);
+            return ResponseEntity.ok(name);
+        } else {
+            return ResponseEntity.status(401).body("Not logged in");
+        }
     }
+
 }

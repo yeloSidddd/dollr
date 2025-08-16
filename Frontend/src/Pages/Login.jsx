@@ -7,22 +7,40 @@ import axios from "axios";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   const nav = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/login", {
-        email: email,
-        password: password,
-      });
+      const res = await axios.post(
+        "http://localhost:8080/api/auth/login",
+        {
+          email: email,
+          password: password,
+        },
+        { withCredentials: true }
+      );
 
       console.log("Response Text:", res.data);
       if (res.data === "success") {
+        await fetchName();
         nav("/main/dashboard");
       }
     } catch (err) {
       console.log("Error:", err);
+    }
+  };
+
+  const fetchName = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/users/me", {
+        withCredentials: true,
+      });
+      setName(res.data);
+      console.log(res.data);
+    } catch (err) {
+      console.log("Not logged in or error:", err);
     }
   };
 
