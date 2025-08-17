@@ -13,6 +13,7 @@ export default function Sidebar() {
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
   const navItems = [
     {
@@ -35,31 +36,31 @@ export default function Sidebar() {
   ];
 
   useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const res = await axios.get("http://localhost:8080/api/users/me", {
-          withCredentials: true,
-        });
-        setName(res.data);
-        console.log(res.data);
-      } catch (err) {
-        console.log("Not logged in or error:", err);
-      }
-    };
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/users/me", {
+        withCredentials: true,
+      });
 
-    fetchName();
-  }, []);
+      setName(res.data.name || "");
+      setEmail(res.data.email || "");
+    } catch (err) {
+      console.log("Not logged in or error:", err);
+    }
+  };
 
+  fetchUser();
+}, []);
   const logOut = async () => {
     try {
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:8080/api/auth/logout",
         {},
         {
           withCredentials: true,
         }
       );
-      navigate("/")
+      navigate("/");
     } catch (err) {
       console.log(err);
     }
@@ -137,7 +138,7 @@ export default function Sidebar() {
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-white truncate">{name}</p>
               <p className="text-xs text-gray-400 truncate">
-                acoustic@email.com
+                {email}
               </p>
             </div>
             <div className="text-xs font-semibold bg-white text-black rounded-full px-3 py-1 hover:bg-gray-200 transition-all">
@@ -255,7 +256,7 @@ export default function Sidebar() {
             >
               <p className="text-sm font-medium text-white truncate">{name}</p>
               <p className="text-xs text-gray-400 truncate">
-                acoustic@email.com
+                {email}
               </p>
             </div>
           </div>

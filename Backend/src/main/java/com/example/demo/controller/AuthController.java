@@ -35,6 +35,7 @@ public class AuthController {
 
         if (user.getPassword().equals(loginRequest.getPassword())) {
             session.setAttribute("name", user.getName());
+            session.setAttribute("email", user.getEmail());
             return ResponseEntity.ok("success");
         } else {
             return ResponseEntity.status(401).body("invalid");

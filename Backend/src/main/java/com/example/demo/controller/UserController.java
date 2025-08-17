@@ -5,6 +5,8 @@ import com.example.demo.repository.UserRepository;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,14 +33,15 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<String> getSessionName(HttpSession session) {
+    public ResponseEntity<User> getSessionName(HttpSession session) {
         String name = (String) session.getAttribute("name");
+        String email = (String) session.getAttribute("email");
 
         if (name != null) {
-            System.out.println(name);
-            return ResponseEntity.ok(name);
+            User user = new User(email, null, name, null, null, null, null);
+            return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.status(401).body("Not logged in");
+            return ResponseEntity.status(401).body(null);
         }
     }
 
