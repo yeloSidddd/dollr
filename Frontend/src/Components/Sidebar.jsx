@@ -36,21 +36,21 @@ export default function Sidebar() {
   ];
 
   useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/users/me", {
-        withCredentials: true,
-      });
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/api/users/me", {
+          withCredentials: true,
+        });
 
-      setName(res.data.name || "");
-      setEmail(res.data.email || "");
-    } catch (err) {
-      console.log("Not logged in or error:", err);
-    }
-  };
+        setName(res.data.name || "");
+        setEmail(res.data.email || "");
+      } catch (err) {
+        console.log("Not logged in or error:", err);
+      }
+    };
 
-  fetchUser();
-}, []);
+    fetchUser();
+  }, []);
   const logOut = async () => {
     try {
       await axios.post(
@@ -98,9 +98,9 @@ export default function Sidebar() {
       <ProfileCardModal
         show={showProfileModal}
         onClose={() => setShowProfileModal(false)}
-        onUpgrade={() => {
-          setShowUpgradeModal(false);
-        }}
+        onEdit={() => console.log("Edit profile clicked")}
+        name={name}
+        email={email}
       />
 
       {/* Mobile Overlay */}
@@ -137,9 +137,7 @@ export default function Sidebar() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-white truncate">{name}</p>
-              <p className="text-xs text-gray-400 truncate">
-                {email}
-              </p>
+              <p className="text-xs text-gray-400 truncate">{email}</p>
             </div>
             <div className="text-xs font-semibold bg-white text-black rounded-full px-3 py-1 hover:bg-gray-200 transition-all">
               Pro
@@ -255,9 +253,7 @@ export default function Sidebar() {
               }`}
             >
               <p className="text-sm font-medium text-white truncate">{name}</p>
-              <p className="text-xs text-gray-400 truncate">
-                {email}
-              </p>
+              <p className="text-xs text-gray-400 truncate">{email}</p>
             </div>
           </div>
         </button>

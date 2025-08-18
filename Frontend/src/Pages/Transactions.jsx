@@ -70,7 +70,6 @@ export default function Transactions() {
           />
         </div>
 
-        {/* Add New Transaction */}
         <button className="flex items-center bg-green-500 hover:bg-green-600 px-4 py-3 rounded-full flex-1 min-w-[200px]">
           <div className="w-5 h-5 text-white flex-shrink-0">
             <svg
