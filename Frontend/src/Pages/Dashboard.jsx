@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch user email
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -36,6 +37,7 @@ export default function Dashboard() {
     fetchUser();
   }, []);
 
+  // Fetch transactions
   const fetchTransactions = async () => {
     if (!email) return;
     try {
@@ -52,6 +54,7 @@ export default function Dashboard() {
     fetchTransactions();
   }, [email]);
 
+  // Add new transaction
   const handleAddTransaction = async (e) => {
     e.preventDefault();
     const transactionData = {
@@ -59,7 +62,8 @@ export default function Dashboard() {
       description,
       type,
       amount: parseFloat(amount),
-      date,
+      // Convert date to ISO string for backend
+      date: date ? `${date}T00:00:00` : null,
     };
     try {
       await axios.post(
@@ -67,6 +71,7 @@ export default function Dashboard() {
         transactionData
       );
       fetchTransactions();
+      // Reset form
       setDescription("");
       setAmount("");
       setType("income");

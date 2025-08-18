@@ -17,10 +17,10 @@ import java.util.List;
 public class UserTransactionController {
 
     @Autowired
-    private UserRepository userRepository; // your UserRepository
+    private UserRepository userRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository; // your TransactionRepository
+    private TransactionRepository transactionRepository;
 
     // Create user
     @PostMapping("/users")
@@ -48,7 +48,13 @@ public class UserTransactionController {
 
         transaction.setUser(user);
         transaction.setBalance(newBalance);
-        transaction.setDate(LocalDateTime.now());
+
+        // Use the date provided by the frontend if available
+        if (transaction.getDate() != null) {
+            transaction.setDate(transaction.getDate());
+        } else {
+            transaction.setDate(LocalDateTime.now());
+        }
 
         return transactionRepository.save(transaction);
     }

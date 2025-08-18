@@ -90,7 +90,7 @@ export default function Reports() {
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Left Panel */}
       <div className="w-full md:flex-[3] flex flex-col h-full">
-        <div className="flex flex-row justify-between items-start p-4 sm:p-10 md:p-10 gap-4">
+        <div className="flex flex-row justify-between items-start p-6 sm:p-10 md:p-10 gap-4">
           <h2 className="text-xl font-semibold">Report</h2>
         </div>
 
