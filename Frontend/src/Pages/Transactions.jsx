@@ -19,7 +19,6 @@ export default function Transactions() {
         setEmail(res.data.email || "");
       } catch (err) {
         console.log("Not logged in or error:", err);
-        console.log("test");
       }
     };
     fetchUser();
