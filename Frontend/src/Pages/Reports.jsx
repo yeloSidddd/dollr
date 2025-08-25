@@ -33,7 +33,6 @@ export default function Reports() {
   const initializeChart = useCallback((period = "all") => {
     if (chartInstance.current) {
       chartInstance.current.destroy();
-      console.log("Hello");
     }
 
     if (!chartRef.current) return;
