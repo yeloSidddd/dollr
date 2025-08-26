@@ -1,105 +1,134 @@
 import ApexCharts from "apexcharts";
-import { useEffect, useRef, useState, useCallback } from "react";
-
-const chartData = {
-  "1d": {
-    categories: ["9 AM", "12 PM", "3 PM", "6 PM", "9 PM"],
-    data: [45, 52, 38, 65, 58],
-  },
-  "1w": {
-    categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    data: [30, 40, 35, 50, 49, 60, 70],
-  },
-  "1m": {
-    categories: ["Week 1", "Week 2", "Week 3", "Week 4"],
-    data: [20, 45, 35, 80],
-  },
-  "1y": {
-    categories: ["Q1", "Q2", "Q3", "Q4"],
-    data: [65, 59, 80, 95],
-  },
-  all: {
-    categories: ["2020", "2021", "2022", "2023", "2024"],
-    data: [10, 25, 40, 65, 90],
-  },
-};
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 export default function Reports() {
-  
+  const [email, setEmail] = useState("");
+  const [transactions, setTransactions] = useState([]);
+  const [activeButton, setActiveButton] = useState("all");
+  const [chartData, setChartData] = useState({ categories: [], data: [] });
+
   const chartInstance = useRef(null);
   const chartRef = useRef(null);
-  const [activeButton, setActiveButton] = useState("all");
 
-  const initializeChart = useCallback((period = "all") => {
-    if (chartInstance.current) {
-      chartInstance.current.destroy();
-    }
+  // Fetch logged-in user
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/api/users/me", {
+          withCredentials: true,
+        });
+        setEmail(res.data.email || "");
+      } catch (err) {
+        console.log("Not logged in or error:", err);
+      }
+    };
+    fetchUser();
+  }, []);
 
-    if (!chartRef.current) return;
+  // Fetch all transactions
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (!email) return;
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/users/${email}/transactions`
+        );
+        setTransactions(res.data);
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
+      }
+    };
+    fetchTransactions();
+  }, [email]);
+
+  // Fetch balance history for chart
+  useEffect(() => {
+    const fetchChartData = async () => {
+      if (!email) return;
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/users/${email}/balance-history?period=${activeButton}`
+        );
+        const { categories, balances } = res.data || {
+          categories: [],
+          balances: [],
+        };
+        setChartData({ categories, data: balances });
+      } catch (err) {
+        console.error("Failed to fetch chart data:", err);
+      }
+    };
+    fetchChartData();
+  }, [email, activeButton]);
+
+  // Initialize chart once
+  useEffect(() => {
+    if (!chartRef.current || chartInstance.current) return;
 
     chartInstance.current = new ApexCharts(chartRef.current, {
-      chart: {
-        type: "line",
-        width: "100%",
-        height: 200,
-        toolbar: { show: false },
-      },
-      stroke: { curve: "smooth" },
-      colors: ["#3AC249", "#000000"],
+      chart: { type: "line", height: 250, toolbar: { show: false } },
+      stroke: { curve: "smooth", width: 3 },
+      colors: ["#3AC249"],
       fill: {
         type: "gradient",
         gradient: {
           shade: "light",
           type: "vertical",
-          shadeIntensity: 0.5,
           gradientToColors: ["#000000"],
-          inverseColors: false,
-          opacityFrom: 1,
-          opacityTo: 1,
-          stops: [0, 100],
+          opacityFrom: 0.8,
+          opacityTo: 0.2,
         },
       },
-      series: [{ name: "chart", data: chartData[period].data }],
-      xaxis: {
-        categories: chartData[period].categories,
-        labels: { show: false },
-        axisBorder: { show: false },
-        axisTicks: { show: false },
+      series: [{ name: "Balance", data: [] }],
+      xaxis: { categories: [], labels: { rotate: -45, style: { fontSize: "12px" } } },
+      yaxis: { labels: { formatter: (val) => `$${val.toFixed(2)}` } },
+      tooltip: {
+        x: { formatter: (val, opts) => chartData.categories[opts.dataPointIndex] },
+        y: { formatter: (val) => `$${val.toFixed(2)}` },
       },
-      yaxis: { show: false },
-      grid: { show: false },
+      grid: { borderColor: "#e0e0e0", strokeDashArray: 4 },
     });
 
     chartInstance.current.render();
   }, []);
 
+  // Update chart when data changes
   useEffect(() => {
-    initializeChart(activeButton);
+    if (chartInstance.current) {
+      chartInstance.current.updateOptions({
+        xaxis: { categories: chartData.categories },
+        series: [{ name: "Balance", data: chartData.data }],
+      });
+    }
+  }, [chartData]);
 
-    return () => {
-      if (chartInstance.current) {
-        chartInstance.current.destroy();
-      }
-    };
-  }, [activeButton, initializeChart]);
+  const handleButtonClick = (period) => setActiveButton(period);
 
-  const handleButtonClick = (period) => {
-    setActiveButton(period);
-  };
+  // Summary
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const netBalance = totalIncome - totalExpense;
 
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Left Panel */}
       <div className="w-full md:flex-[3] flex flex-col h-full">
-        <div className="flex flex-row justify-between items-start p-6 sm:p-10 md:p-10 gap-4">
+        <div className="flex justify-between items-start p-6 sm:p-10 gap-4">
           <h2 className="text-xl font-semibold">Report</h2>
         </div>
 
         {/* Chart */}
-        <div className="p-6 sm:p-10 md:p-10 w-full" ref={chartRef} />
+        <div className="p-6 sm:p-10 w-full" ref={chartRef} />
 
-        {/* Button group */}
-        <div className="flex justify-center items-center px-6 py-6 sm:px-6 sm:py-0">
+        {/* Period buttons */}
+        <div className="flex justify-center items-center px-6 py-6 sm:px-6">
           <div className="flex flex-wrap justify-center gap-6">
             {[
               { label: "1D", value: "1d" },
@@ -107,37 +136,35 @@ export default function Reports() {
               { label: "1M", value: "1m" },
               { label: "1Y", value: "1y" },
               { label: "ALL", value: "all" },
-            ].map((button) => (
+            ].map((btn) => (
               <button
-                key={button.value}
-                onClick={() => handleButtonClick(button.value)}
-                className={`px-5 py-2 md:px-8 rounded-full text-sm font-medium transition-all duration-200 hover:transform hover:-translate-y-0.5 ${
-                  activeButton === button.value
+                key={btn.value}
+                onClick={() => handleButtonClick(btn.value)}
+                className={`px-5 py-2 md:px-8 rounded-full text-sm font-medium transition-all duration-200 ${
+                  activeButton === btn.value
                     ? "bg-black text-white hover:bg-gray-800"
                     : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                 }`}
               >
-                {button.label}
+                {btn.label}
               </button>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-row justify-between items-start p-6 sm:p-10 md:px-10 md:pt-10 md:pb-6 gap-4">
-          <h2 className="text-xl font-semibold">Summary</h2>
-        </div>
-
-        <div className="px-6 sm:px-10 md:px-10">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        {/* Summary */}
+        <div className="px-6 sm:px-10 space-y-2">
+          <p className="text-green-600 font-medium">Income: ${totalIncome.toFixed(2)}</p>
+          <p className="text-red-600 font-medium">Expenses: ${totalExpense.toFixed(2)}</p>
+          <p className="text-black font-semibold">Net Balance: ${netBalance.toFixed(2)}</p>
         </div>
       </div>
 
       {/* Right Panel */}
       <main className="w-full md:flex-[1] bg-gray-200 overflow-auto max-h-screen">
-        <div className="flex flex-row justify-between items-start p-6 sm:p-10 md:p-10 gap-4">
+        <div className="flex justify-between items-start p-6 sm:p-10 gap-4">
           <h1 className="text-lg font-medium">Where did your money go?</h1>
         </div>
-        {/* Add right panel content here */}
       </main>
     </div>
   );

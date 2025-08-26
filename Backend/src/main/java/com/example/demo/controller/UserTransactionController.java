@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -71,4 +72,155 @@ public class UserTransactionController {
         Transaction lastTransaction = transactionRepository.findTopByUserEmailOrderByDateDesc(email);
         return (lastTransaction != null) ? lastTransaction.getBalance() : 0.0;
     }
+
+    // Chart data grouped by period
+    @GetMapping("/users/{email}/chart")
+    public Map<String, Object> getChartData(
+            @PathVariable String email,
+            @RequestParam(defaultValue = "all") String period) {
+
+        List<Transaction> transactions = transactionRepository.findByUserEmailOrderByDateAsc(email);
+        Map<String, Object> response = new HashMap<>();
+        List<String> categories = new ArrayList<>();
+        List<Double> data = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        switch (period.toLowerCase()) {
+            case "1d": {
+                // Group by hour (today only)
+                Map<Integer, Double> hourly = new TreeMap<>();
+                transactions.stream()
+                        .filter(t -> t.getDate().toLocalDate().isEqual(now.toLocalDate()))
+                        .forEach(t -> {
+                            int hour = t.getDate().getHour();
+                            hourly.put(hour, hourly.getOrDefault(hour, 0.0) + t.getAmount());
+                        });
+                hourly.forEach((hour, amount) -> {
+                    categories.add(hour + ":00");
+                    data.add(amount);
+                });
+                break;
+            }
+            case "1w": {
+                // Group by day of week (last 7 days)
+                Map<String, Double> daily = new LinkedHashMap<>();
+                transactions.stream()
+                        .filter(t -> t.getDate().isAfter(now.minusDays(7)))
+                        .forEach(t -> {
+                            String day = t.getDate().getDayOfWeek().toString().substring(0, 3);
+                            daily.put(day, daily.getOrDefault(day, 0.0) + t.getAmount());
+                        });
+                daily.forEach((day, amount) -> {
+                    categories.add(day);
+                    data.add(amount);
+                });
+                break;
+            }
+            case "1m": {
+                // Group by week (last 30 days)
+                Map<String, Double> weekly = new LinkedHashMap<>();
+                transactions.stream()
+                        .filter(t -> t.getDate().isAfter(now.minusDays(30)))
+                        .forEach(t -> {
+                            int week = (t.getDate().getDayOfMonth() - 1) / 7 + 1;
+                            String weekLabel = "Week " + week;
+                            weekly.put(weekLabel, weekly.getOrDefault(weekLabel, 0.0) + t.getAmount());
+                        });
+                weekly.forEach((week, amount) -> {
+                    categories.add(week);
+                    data.add(amount);
+                });
+                break;
+            }
+            case "1y": {
+                // Group by quarter (last 12 months)
+                Map<String, Double> quarterly = new LinkedHashMap<>();
+                transactions.stream()
+                        .filter(t -> t.getDate().isAfter(now.minusYears(1)))
+                        .forEach(t -> {
+                            int month = t.getDate().getMonthValue();
+                            int quarter = (month - 1) / 3 + 1;
+                            String label = "Q" + quarter;
+                            quarterly.put(label, quarterly.getOrDefault(label, 0.0) + t.getAmount());
+                        });
+                quarterly.forEach((q, amount) -> {
+                    categories.add(q);
+                    data.add(amount);
+                });
+                break;
+            }
+            case "all":
+            default: {
+                // Group by year
+                Map<Integer, Double> yearly = new TreeMap<>();
+                transactions.forEach(t -> {
+                    int year = t.getDate().getYear();
+                    yearly.put(year, yearly.getOrDefault(year, 0.0) + t.getAmount());
+                });
+                yearly.forEach((year, amount) -> {
+                    categories.add(String.valueOf(year));
+                    data.add(amount);
+                });
+                break;
+            }
+        }
+
+        response.put("categories", categories);
+        response.put("data", data);
+        return response;
+    }
+
+  @GetMapping("/users/{email}/balance-history")
+public Map<String, Object> getBalanceHistory(
+        @PathVariable String email,
+        @RequestParam(defaultValue = "all") String period) {
+
+    List<Transaction> transactions = transactionRepository.findByUserEmailOrderByDateAsc(email);
+    Map<String, Object> response = new HashMap<>();
+    List<String> categories = new ArrayList<>();
+    List<Double> balances = new ArrayList<>();
+
+    if (transactions.isEmpty()) {
+        response.put("categories", categories);
+        response.put("balances", balances);
+        return response;
+    }
+
+    LocalDateTime now = LocalDateTime.now();
+
+    // Filter by period
+    List<Transaction> filtered = switch (period.toLowerCase()) {
+        case "1d" -> transactions.stream()
+                .filter(t -> t.getDate().toLocalDate().isEqual(now.toLocalDate()))
+                .toList();
+        case "1w" -> transactions.stream()
+                .filter(t -> !t.getDate().toLocalDate().isBefore(now.minusDays(6).toLocalDate()))
+                .toList();
+        case "1m" -> transactions.stream()
+                .filter(t -> !t.getDate().toLocalDate().isBefore(now.minusDays(29).toLocalDate()))
+                .toList();
+        case "1y" -> transactions.stream()
+                .filter(t -> !t.getDate().toLocalDate().isBefore(now.minusYears(1).toLocalDate()))
+                .toList();
+        default -> transactions;
+    };
+
+    // Build cumulative balance
+    double runningBalance = 0.0;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    for (Transaction t : filtered) {
+        if ("income".equalsIgnoreCase(t.getType())) {
+            runningBalance += t.getAmount();
+        } else {
+            runningBalance -= t.getAmount();
+        }
+        categories.add(t.getDate().format(formatter));
+        balances.add(runningBalance);
+    }
+
+    response.put("categories", categories);
+    response.put("balances", balances);
+    return response;
+}
 }
