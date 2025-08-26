@@ -170,7 +170,7 @@ public class UserTransactionController {
         return response;
     }
 
-  @GetMapping("/users/{email}/balance-history")
+@GetMapping("/users/{email}/balance-history")
 public Map<String, Object> getBalanceHistory(
         @PathVariable String email,
         @RequestParam(defaultValue = "all") String period) {
@@ -186,36 +186,43 @@ public Map<String, Object> getBalanceHistory(
         return response;
     }
 
-    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime latest = transactions.get(transactions.size() - 1).getDate();
 
-    // Filter by period
+    // Filter transactions based on period (using date only, no time)
     List<Transaction> filtered = switch (period.toLowerCase()) {
         case "1d" -> transactions.stream()
-                .filter(t -> t.getDate().toLocalDate().isEqual(now.toLocalDate()))
+                .filter(t -> t.getDate().toLocalDate().isEqual(latest.toLocalDate()))
                 .toList();
         case "1w" -> transactions.stream()
-                .filter(t -> !t.getDate().toLocalDate().isBefore(now.minusDays(6).toLocalDate()))
+                .filter(t -> !t.getDate().toLocalDate().isBefore(latest.toLocalDate().minusDays(6)) &&
+                             !t.getDate().toLocalDate().isAfter(latest.toLocalDate()))
                 .toList();
         case "1m" -> transactions.stream()
-                .filter(t -> !t.getDate().toLocalDate().isBefore(now.minusDays(29).toLocalDate()))
+                .filter(t -> !t.getDate().toLocalDate().isBefore(latest.toLocalDate().minusDays(29)) &&
+                             !t.getDate().toLocalDate().isAfter(latest.toLocalDate()))
                 .toList();
         case "1y" -> transactions.stream()
-                .filter(t -> !t.getDate().toLocalDate().isBefore(now.minusYears(1).toLocalDate()))
+                .filter(t -> !t.getDate().toLocalDate().isBefore(latest.toLocalDate().minusYears(1).plusDays(1)) &&
+                             !t.getDate().toLocalDate().isAfter(latest.toLocalDate()))
                 .toList();
         default -> transactions;
     };
 
-    // Build cumulative balance
-    double runningBalance = 0.0;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    // Group transactions by date (date only, no time)
+    Map<String, Double> dailyNet = new LinkedHashMap<>();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     for (Transaction t : filtered) {
-        if ("income".equalsIgnoreCase(t.getType())) {
-            runningBalance += t.getAmount();
-        } else {
-            runningBalance -= t.getAmount();
-        }
-        categories.add(t.getDate().format(formatter));
+        String dateKey = t.getDate().toLocalDate().format(dateFormatter);
+        double amount = "income".equalsIgnoreCase(t.getType()) ? t.getAmount() : -t.getAmount();
+        dailyNet.put(dateKey, dailyNet.getOrDefault(dateKey, 0.0) + amount);
+    }
+
+    // Calculate cumulative balance from grouped daily net amounts
+    double runningBalance = 0.0;
+    for (Map.Entry<String, Double> entry : dailyNet.entrySet()) {
+        runningBalance += entry.getValue();
+        categories.add(entry.getKey());
         balances.add(runningBalance);
     }
 

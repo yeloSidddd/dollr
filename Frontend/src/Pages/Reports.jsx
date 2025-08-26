@@ -6,8 +6,10 @@ export default function Reports() {
   const [email, setEmail] = useState("");
   const [transactions, setTransactions] = useState([]);
   const [activeButton, setActiveButton] = useState("all");
-  const [chartData, setChartData] = useState({ categories: [], data: [] });
-
+  const [chartData, setChartData] = useState({
+    categories: [],
+    data: [],
+  });
   const chartInstance = useRef(null);
   const chartRef = useRef(null);
 
@@ -67,8 +69,20 @@ export default function Reports() {
     if (!chartRef.current || chartInstance.current) return;
 
     chartInstance.current = new ApexCharts(chartRef.current, {
-      chart: { type: "line", height: 250, toolbar: { show: false } },
-      stroke: { curve: "smooth", width: 3 },
+      chart: {
+        type: "line",
+        height: 250,
+        toolbar: { show: false },
+        background: "transparent",
+        sparkline: {
+          enabled: false,
+        },
+      },
+      stroke: {
+        curve: "smooth",
+        width: 3,
+        lineCap: "round",
+      },
       colors: ["#3AC249"],
       fill: {
         type: "gradient",
@@ -76,18 +90,55 @@ export default function Reports() {
           shade: "light",
           type: "vertical",
           gradientToColors: ["#000000"],
-          opacityFrom: 0.8,
-          opacityTo: 0.2,
+          opacityFrom: 1,
+          opacityTo: 0.8,
         },
       },
-      series: [{ name: "Balance", data: [] }],
-      xaxis: { categories: [], labels: { rotate: -45, style: { fontSize: "12px" } } },
-      yaxis: { labels: { formatter: (val) => `$${val.toFixed(2)}` } },
-      tooltip: {
-        x: { formatter: (val, opts) => chartData.categories[opts.dataPointIndex] },
-        y: { formatter: (val) => `$${val.toFixed(2)}` },
+      series: [
+        {
+          name: "Balance",
+          data: [],
+        },
+      ],
+      xaxis: {
+        type: "datetime",
+        categories: [],
+        labels: {
+          show: true,
+          style: {
+            fontSize: "12px",
+            colors: "#666",
+          },
+          rotate: -45,
+        },
+        axisBorder: { show: false },
+        axisTicks: { show: false },
       },
-      grid: { borderColor: "#e0e0e0", strokeDashArray: 4 },
+      yaxis: {
+        labels: { show: false },
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+      },
+      tooltip: {
+        enabled: true,
+        x: {
+          formatter: (val, opts) => {
+            const index = opts.dataPointIndex;
+            return chartData.categories && chartData.categories[index]
+              ? chartData.categories[index]
+              : "N/A";
+          },
+        },
+        y: {
+          formatter: (val) => `Balance: ${val ? val.toFixed(2) : "0.00"}`,
+        },
+      },
+      grid: {
+        show: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
     });
 
     chartInstance.current.render();
@@ -95,11 +146,45 @@ export default function Reports() {
 
   // Update chart when data changes
   useEffect(() => {
-    if (chartInstance.current) {
-      chartInstance.current.updateOptions({
-        xaxis: { categories: chartData.categories },
-        series: [{ name: "Balance", data: chartData.data }],
+    if (chartInstance.current && chartData.categories.length > 0) {
+      // Convert date strings to timestamps for datetime x-axis
+      const timestamps = chartData.categories.map((date) => {
+        // Handle both date-only and datetime strings
+        const cleanDate = date.includes("T") ? date.split("T")[0] : date;
+        return new Date(cleanDate + "T12:00:00").getTime();
       });
+
+      let seriesData = chartData.data.map((value, index) => ({
+        x: timestamps[index],
+        y: value,
+      }));
+
+      // If we have only 1 data point, create a smooth line by adding padding points
+      if (seriesData.length === 1) {
+        const singlePoint = seriesData[0];
+        const dayMs = 24 * 60 * 60 * 1000;
+
+        seriesData = [
+          { x: singlePoint.x - dayMs, y: singlePoint.y },
+          { x: singlePoint.x, y: singlePoint.y },
+          { x: singlePoint.x + dayMs, y: singlePoint.y },
+        ];
+      } else if (seriesData.length === 2) {
+        // For 2 points, add one point in between for smoother curve
+        const [point1, point2] = seriesData;
+        const midPoint = {
+          x: (point1.x + point2.x) / 2,
+          y: (point1.y + point2.y) / 2,
+        };
+        seriesData = [point1, midPoint, point2];
+      }
+
+      chartInstance.current.updateSeries([
+        {
+          name: "Balance",
+          data: seriesData,
+        },
+      ]);
     }
   }, [chartData]);
 
@@ -153,10 +238,19 @@ export default function Reports() {
         </div>
 
         {/* Summary */}
+        <div className="flex justify-between items-start p-6 sm:p-10 gap-4">
+          <h2 className="text-xl font-semibold">Summary</h2>
+        </div>
         <div className="px-6 sm:px-10 space-y-2">
-          <p className="text-green-600 font-medium">Income: ${totalIncome.toFixed(2)}</p>
-          <p className="text-red-600 font-medium">Expenses: ${totalExpense.toFixed(2)}</p>
-          <p className="text-black font-semibold">Net Balance: ${netBalance.toFixed(2)}</p>
+          <p className="text-green-600 font-medium">
+            Income: ${totalIncome.toFixed(2)}
+          </p>
+          <p className="text-red-600 font-medium">
+            Expenses: ${totalExpense.toFixed(2)}
+          </p>
+          <p className="text-black font-semibold">
+            Net Balance: ${netBalance.toFixed(2)}
+          </p>
         </div>
       </div>
 
