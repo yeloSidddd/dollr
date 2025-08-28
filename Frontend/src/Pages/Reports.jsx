@@ -22,7 +22,7 @@ export default function Reports() {
         });
         setEmail(res.data.email || "");
       } catch (err) {
-        console.log("Not logged in or ", err);
+        console.log("Not logged in or dfg", err);
       }
     };
     fetchUser();
