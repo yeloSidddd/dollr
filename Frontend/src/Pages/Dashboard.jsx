@@ -156,7 +156,7 @@ export default function Dashboard() {
             setFilterType((prev) => (prev === "income" ? "all" : "income"))
           }
         >
-          <span className="text-sm font-medium">Income</span>
+          <span className="text-sm font-medium">Incom</span>
         </button>
 
         {/* Expense Filter */}
